@@ -1,0 +1,110 @@
+{% extends 'base.html' %}
+
+{% block title %}CropFusion - AI Plant Disease Detection{% endblock %}
+
+{% block content %}
+<section class="hero">
+    <div class="hero-content animate" style="padding-left: 2rem;">
+        <h1>Protect Your Plants with AI-Powered Disease Detection</h1>
+        <p>Upload a photo of your plant leaf and get instant diagnosis using our advanced machine learning technology.
+            Identify diseases early and keep your garden healthy.</p>
+        <div>
+            <a href="{% url 'predict_disease' %}" class="btn">Detect Disease Now</a>
+            <a href="#about" class="btn btn-secondary">Learn More</a>
+        </div>
+    </div>
+    <div class="hero-image animate">
+        <img src="https://images.unsplash.com/photo-1523348837708-15d4a09cfac2?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1470&q=80"
+            alt="Healthy plant leaves">
+    </div>
+</section>
+
+<section class="features" id="about">
+    <div class="section-title animate">
+        <h2>How It Works</h2>
+        <p>Our AI-powered system makes plant disease detection simple and accurate</p>
+    </div>
+    <div class="features-grid">
+        <div class="card feature-card animate">
+            <div class="feature-icon">
+                <i class="fas fa-camera"></i>
+            </div>
+            <h3>Take a Photo</h3>
+            <p>Capture a clear image of the affected plant leaf using your smartphone or camera.</p>
+        </div>
+        <div class="card feature-card animate">
+            <div class="feature-icon">
+                <i class="fas fa-upload"></i>
+            </div>
+            <h3>Upload Image</h3>
+            <p>Upload the image to our platform with a simple drag and drop or file selection.</p>
+        </div>
+        <div class="card feature-card animate">
+            <div class="feature-icon">
+                <i class="fas fa-robot"></i>
+            </div>
+            <h3>AI Analysis</h3>
+            <p>Our advanced machine learning model analyzes the image to identify diseases.</p>
+        </div>
+        <div class="card feature-card animate">
+            <div class="feature-icon">
+                <i class="fas fa-clipboard-check"></i>
+            </div>
+            <h3>Get Results</h3>
+            <p>Receive instant diagnosis with confidence score and recommendations.</p>
+        </div>
+    </div>
+</section>
+
+<section class="team-section" id="team">
+    <div class="container">
+        <div class="section-title animate">
+            <h2>Meet Our Team</h2>
+            <p>The brilliant minds behind PlantDoctor</p>
+        </div>
+        <div class="team-grid">
+            <div class="card team-member animate">
+                <img src="https://media.licdn.com/dms/image/v2/D4D03AQFvOi2D-mfpkg/profile-displayphoto-shrink_200_200/profile-displayphoto-shrink_200_200/0/1710856190218?e=1747267200&v=beta&t=Xe-uNTM63RxTNLZf4SvlqHQpEYS0AcX7WmInjcWNt2I"
+                    alt="Heer Panchal">
+                <h3>Heer Panchal</h3>
+                <p>heerrpanchal@gmail.com</p>
+                <div class="social-links">
+                    <a href="#"><i class="fab fa-linkedin"></i></a>
+                    <a href="#"><i class="fab fa-github"></i></a>
+                    <a href="mailto:heerrpanchal@gmail.com"><i class="fas fa-envelope"></i></a>
+                </div>
+            </div>
+            <div class="card team-member animate">
+                <img src="https://media.licdn.com/dms/image/v2/D4E03AQFI4VeQzpRMtQ/profile-displayphoto-shrink_100_100/profile-displayphoto-shrink_100_100/0/1711271636439?e=1747267200&v=beta&t=oEZ0eFFRslXZ2n66qLffkuiltM9_F5-3i5edI3BMEXU"
+                    alt="Kinjal Panchal">
+                <h3>Kinjal Panchal</h3>
+                <p>kinjal.p@somaiya.edu</p>
+                <div class="social-links">
+                    <a href="#"><i class="fab fa-linkedin"></i></a>
+                    <a href="#"><i class="fab fa-github"></i></a>
+                    <a href="mailto:kinjal.p@somaiya.edu"><i class="fas fa-envelope"></i></a>
+                </div>
+            </div>
+            <div class="card team-member animate">
+                <img src="https://media.licdn.com/dms/image/v2/D4D03AQFdwVsdeY3s3A/profile-displayphoto-shrink_100_100/profile-displayphoto-shrink_100_100/0/1718733711740?e=1747267200&v=beta&t=_6vYIpbsD9271Cm1ZP6XMM2XLGji03xrZt1fVIKJj4E"
+                    alt="Jhalak Dedhia">
+                <h3>Jhalak Dedhia</h3>
+                <p>jhalak.d@somaiya.edu</p>
+                <div class="social-links">
+                    <a href="#"><i class="fab fa-linkedin"></i></a>
+                    <a href="#"><i class="fab fa-github"></i></a>
+                    <a href="mailto:jhalak.d@somaiya.edu"><i class="fas fa-envelope"></i></a>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="cta">
+    <div class="card animate">
+        <h2>Ready to diagnose your plants?</h2>
+        <p>Our AI can detect multiple plant diseases with high accuracy. Try it now!</p>
+        <a href="{% url 'predict_disease' %}" class="btn">Start Detection</a>
+    </div>
+</section>
+{% endblock %}

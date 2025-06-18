@@ -1,0 +1,501 @@
+{% extends 'base.html' %}
+
+{% block title %}Disease Detection - CropFusion{% endblock %}
+
+{% block extra_css %}
+<style>
+    .upload-instructions {
+        margin-bottom: 2rem;
+        text-align: center;
+    }
+
+    .upload-steps {
+        display: flex;
+        justify-content: space-between;
+        margin-bottom: 2rem;
+        flex-wrap: wrap;
+    }
+
+    .upload-step {
+        flex: 1;
+        min-width: 200px;
+        padding: 1rem;
+        text-align: center;
+    }
+
+    .step-number {
+        display: inline-block;
+        width: 30px;
+        height: 30px;
+        background-color: var(--primary-color);
+        color: white;
+        border-radius: 50%;
+        line-height: 30px;
+        margin-bottom: 0.5rem;
+    }
+
+    .upload-options {
+        display: flex;
+        gap: 1rem;
+        justify-content: center;
+        margin-bottom: 2rem;
+        flex-wrap: wrap;
+    }
+
+    .option-btn {
+        padding: 0.8rem 1.5rem;
+        border-radius: 5px;
+        background-color: var(--white);
+        border: 2px solid var(--primary-light);
+        color: var(--text-color);
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        transition: var(--transition);
+    }
+
+    .option-btn:hover {
+        background-color: var(--primary-light);
+    }
+
+    .option-btn.active {
+        background-color: var(--primary-color);
+        color: white;
+        border-color: var(--primary-color);
+    }
+
+    .upload-section,
+    .camera-section {
+        display: none;
+    }
+
+    .upload-section.active,
+    .camera-section.active {
+        display: block;
+    }
+
+    .upload-area {
+        border: 2px dashed var(--primary-light);
+        border-radius: 10px;
+        padding: 2rem;
+        text-align: center;
+        cursor: pointer;
+        transition: var(--transition);
+        margin-bottom: 1rem;
+    }
+
+    .upload-area:hover {
+        border-color: var(--primary-color);
+        background-color: rgba(76, 175, 80, 0.05);
+    }
+
+    .upload-area.highlight {
+        border-color: var(--primary-color);
+        background-color: rgba(76, 175, 80, 0.1);
+    }
+
+    .upload-icon {
+        font-size: 3rem;
+        color: var(--primary-color);
+        margin-bottom: 1rem;
+    }
+
+    .file-input {
+        position: absolute;
+        width: 0.1px;
+        height: 0.1px;
+        opacity: 0;
+        overflow: hidden;
+        z-index: -1;
+    }
+
+    .preview-container {
+        margin-top: 2rem;
+        text-align: center;
+        display: none;
+    }
+
+    .preview-image {
+        max-width: 100%;
+        max-height: 300px;
+        border-radius: 10px;
+        box-shadow: var(--shadow);
+        margin-bottom: 1rem;
+    }
+
+    .file-name {
+        font-size: 0.9rem;
+        color: var(--text-light);
+        margin-bottom: 1rem;
+    }
+
+    .camera-container {
+        margin-top: 2rem;
+        text-align: center;
+    }
+
+    #cameraFeed {
+        width: 100%;
+        max-width: 500px;
+        border-radius: 10px;
+        box-shadow: var(--shadow);
+        margin-bottom: 1rem;
+    }
+
+    .camera-buttons {
+        display: flex;
+        gap: 1rem;
+        justify-content: center;
+        margin: 1rem 0;
+        flex-wrap: wrap;
+    }
+
+    .region-selection {
+        margin-bottom: 1.5rem;
+        text-align: center;
+    }
+
+    .region-selection h4 {
+        font-size: 1rem;
+        margin-bottom: 0.8rem;
+        color: var(--text-color);
+        font-weight: 500;
+    }
+
+    .select-container {
+        position: relative;
+        display: inline-block;
+        max-width: 300px;
+        width: 100%;
+    }
+
+    .region-dropdown {
+        width: 100%;
+        padding: 0.8rem 1rem;
+        padding-right: 2.5rem;
+        border-radius: 5px;
+        border: 2px solid var(--primary-light);
+        background-color: var(--white);
+        appearance: none;
+        -webkit-appearance: none;
+        font-family: inherit;
+        font-size: 0.95rem;
+        color: var(--text-color);
+        cursor: pointer;
+        transition: var(--transition);
+    }
+
+    .region-dropdown:focus {
+        outline: none;
+        border-color: var(--primary-color);
+        box-shadow: 0 0 0 3px rgba(76, 175, 80, 0.2);
+    }
+
+    .select-icon {
+        position: absolute;
+        right: 1rem;
+        top: 50%;
+        transform: translateY(-50%);
+        color: var(--primary-color);
+        pointer-events: none;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="upload-container">
+    <h1 class="animate">Upload Leaf Image</h1>
+
+    <div class="upload-instructions animate">
+        <p>Take a clear photo of the affected leaf and upload it below for instant disease detection.</p>
+    </div>
+
+    <div class="upload-steps animate">
+        <div class="upload-step">
+            <div class="step-number">1</div>
+            <p>Take a clear photo in good lighting</p>
+        </div>
+        <div class="upload-step">
+            <div class="step-number">2</div>
+            <p>Ensure the leaf fills most of the frame</p>
+        </div>
+        <div class="upload-step">
+            <div class="step-number">3</div>
+            <p>Upload and get instant results</p>
+        </div>
+    </div>
+
+    <div class="upload-options animate">
+        <button id="uploadOption" class="option-btn active">
+            <i class="fas fa-upload"></i> Upload Image
+        </button>
+        <button id="cameraOption" class="option-btn">
+            <i class="fas fa-camera"></i> Use Camera
+        </button>
+    </div>
+
+    <!-- Upload Section -->
+    <div id="uploadSection" class="upload-section active animate">
+        <form id="uploadForm" action="{% url 'predict_disease' %}" method="POST" enctype="multipart/form-data">
+            {% csrf_token %}
+            <div class="region-selection animate">
+                <h4>Optional: Select your region for personalized recommendations</h4>
+                <div class="select-container">
+                    <select id="regionSelect" name="region" class="region-dropdown">
+                        <option value="">-- Select District (Optional) --</option>
+                        <optgroup label="Maharashtra">
+                            <option value="Mumbai">Mumbai</option>
+                            <option value="Pune">Pune</option>
+                            <option value="Nagpur">Nagpur</option>
+                            <option value="Nashik">Nashik</option>
+                            <option value="Aurangabad">Aurangabad</option>
+                            <option value="Solapur">Solapur</option>
+                            <option value="Kolhapur">Kolhapur</option>
+                            <option value="Thane">Thane</option>
+                            <option value="Amravati">Amravati</option>
+                            <option value="Sangli">Sangli</option>
+                            <option value="Satara">Satara</option>
+                            <option value="Ratnagiri">Ratnagiri</option>
+                            <option value="Latur">Latur</option>
+                            <option value="Yavatmal">Yavatmal</option>
+                            <option value="Akola">Akola</option>
+                        </optgroup>
+                    </select>
+                    <i class="fas fa-map-marker-alt select-icon"></i>
+                </div>
+            </div>
+            <div id="uploadArea" class="upload-area">
+                <div class="upload-icon">
+                    <i class="fas fa-cloud-upload-alt"></i>
+                </div>
+                <p>Drag & drop your image here or</p>
+                <input type="file" id="fileInput" name="image" accept="image/*" class="file-input">
+                <button type="button" id="browseBtn" class="btn">Browse Files</button>
+            </div>
+
+            <div id="previewContainer" class="preview-container">
+                <img id="previewImage" class="preview-image" src="" alt="Preview">
+                <p id="fileName" class="file-name"></p>
+                <button type="submit" id="submitBtn" class="btn">Analyze Image</button>
+            </div>
+        </form>
+    </div>
+
+    <!-- Camera Section -->
+    <div id="cameraSection" class="camera-section animate">
+        <video id="cameraFeed" autoplay playsinline></video>
+        <div class="camera-buttons">
+            <button id="captureBtn" class="btn">
+                <i class="fas fa-camera"></i> Capture
+            </button>
+            <button id="switchCameraBtn" class="btn btn-secondary">
+                <i class="fas fa-sync"></i> Switch Camera
+            </button>
+        </div>
+        <canvas id="canvas" style="display:none;"></canvas>
+        <div id="cameraCapturePreview" class="preview-container">
+            <img id="capturedImage" class="preview-image" src="" alt="Captured image">
+            <div class="camera-buttons">
+                <button id="retakeBtn" class="btn btn-secondary">
+                    <i class="fas fa-redo"></i> Retake
+                </button>
+                <button id="useImageBtn" class="btn">
+                    <i class="fas fa-check"></i> Use This Image
+                </button>
+            </div>
+        </div>
+        <form id="captureForm" action="{% url 'predict_disease' %}" method="POST" enctype="multipart/form-data">
+            {% csrf_token %}
+            <input type="hidden" id="capturedImageInput" name="image_data">
+            <input type="hidden" id="cameraRegionInput" name="region">
+        </form>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    // Option buttons
+    const uploadOption = document.getElementById('uploadOption');
+    const cameraOption = document.getElementById('cameraOption');
+    const uploadSection = document.getElementById('uploadSection');
+    const cameraSection = document.getElementById('cameraSection');
+
+    // Upload elements
+    const uploadArea = document.getElementById('uploadArea');
+    const fileInput = document.getElementById('fileInput');
+    const browseBtn = document.getElementById('browseBtn');
+    const previewContainer = document.getElementById('previewContainer');
+    const previewImage = document.getElementById('previewImage');
+    const fileName = document.getElementById('fileName');
+    const submitBtn = document.getElementById('submitBtn');
+    const uploadForm = document.getElementById('uploadForm');
+
+    // Camera elements
+    const cameraFeed = document.getElementById('cameraFeed');
+    const captureBtn = document.getElementById('captureBtn');
+    const switchCameraBtn = document.getElementById('switchCameraBtn');
+    const canvas = document.getElementById('canvas');
+    const cameraCapturePreview = document.getElementById('cameraCapturePreview');
+    const capturedImage = document.getElementById('capturedImage');
+    const retakeBtn = document.getElementById('retakeBtn');
+    const useImageBtn = document.getElementById('useImageBtn');
+    const captureForm = document.getElementById('captureForm');
+    const capturedImageInput = document.getElementById('capturedImageInput');
+
+    let stream = null;
+    let facingMode = 'environment'; // Start with back camera
+
+    // Toggle between upload and camera options
+    uploadOption.addEventListener('click', () => {
+        uploadOption.classList.add('active');
+        cameraOption.classList.remove('active');
+        uploadSection.classList.add('active');
+        cameraSection.classList.remove('active');
+        stopCamera();
+    });
+
+    cameraOption.addEventListener('click', () => {
+        cameraOption.classList.add('active');
+        uploadOption.classList.remove('active');
+        cameraSection.classList.add('active');
+        uploadSection.classList.remove('active');
+        startCamera();
+    });
+
+    // File upload handling
+    browseBtn.addEventListener('click', () => {
+        fileInput.click();
+    });
+
+    uploadArea.addEventListener('click', () => {
+        fileInput.click();
+    });
+
+    uploadArea.addEventListener('dragover', (e) => {
+        e.preventDefault();
+        uploadArea.classList.add('highlight');
+    });
+
+    uploadArea.addEventListener('dragleave', () => {
+        uploadArea.classList.remove('highlight');
+    });
+
+    uploadArea.addEventListener('drop', (e) => {
+        e.preventDefault();
+        uploadArea.classList.remove('highlight');
+
+        if (e.dataTransfer.files.length) {
+            fileInput.files = e.dataTransfer.files;
+            displayFilePreview(e.dataTransfer.files[0]);
+        }
+    });
+
+    fileInput.addEventListener('change', () => {
+        displayFilePreview(fileInput.files[0]);
+    });
+
+    function displayFilePreview(file) {
+        if (file) {
+            const reader = new FileReader();
+
+            reader.onload = function (e) {
+                previewImage.src = e.target.result;
+                fileName.textContent = file.name;
+                previewContainer.style.display = 'block';
+            }
+
+            reader.readAsDataURL(file);
+        }
+    }
+
+    // Camera functionality
+    function startCamera() {
+        if (stream) {
+            stopCamera();
+        }
+
+        const constraints = {
+            video: {
+                facingMode: facingMode
+            }
+        };
+
+        navigator.mediaDevices.getUserMedia(constraints)
+            .then(videoStream => {
+                stream = videoStream;
+                cameraFeed.srcObject = stream;
+            })
+            .catch(error => {
+                console.error('Error accessing camera:', error);
+                alert('Could not access the camera. Please make sure you have granted camera permissions.');
+            });
+    }
+
+    function stopCamera() {
+        if (stream) {
+            stream.getTracks().forEach(track => track.stop());
+            stream = null;
+        }
+    }
+
+    switchCameraBtn.addEventListener('click', () => {
+        facingMode = facingMode === 'user' ? 'environment' : 'user';
+        startCamera();
+    });
+
+    captureBtn.addEventListener('click', () => {
+        if (!stream) return;
+
+        // Set canvas dimensions to match video
+        canvas.width = cameraFeed.videoWidth;
+        canvas.height = cameraFeed.videoHeight;
+
+        // Draw the current video frame on the canvas
+        const ctx = canvas.getContext('2d');
+        ctx.drawImage(cameraFeed, 0, 0, canvas.width, canvas.height);
+
+        // Convert canvas to image
+        const imageDataUrl = canvas.toDataURL('image/jpeg');
+        capturedImage.src = imageDataUrl;
+
+        // Show preview
+        cameraCapturePreview.style.display = 'block';
+    });
+
+    retakeBtn.addEventListener('click', () => {
+        cameraCapturePreview.style.display = 'none';
+    });
+
+    useImageBtn.addEventListener('click', () => {
+        // Show loading state
+        useImageBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Processing...';
+        useImageBtn.disabled = true;
+
+        // Get the base64 image data
+        const imageDataUrl = capturedImage.src;
+        capturedImageInput.value = imageDataUrl;
+
+        // Submit the form directly
+        captureForm.submit();
+    });
+
+    // Add form submission indicator for file upload
+    uploadForm.addEventListener('submit', function () {
+        submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Processing...';
+        submitBtn.disabled = true;
+    });
+
+    // Clean up when leaving the page
+    window.addEventListener('beforeunload', stopCamera);
+
+    // Sync region selection between forms
+    const regionSelect = document.getElementById('regionSelect');
+    const cameraRegionInput = document.getElementById('cameraRegionInput');
+
+    regionSelect.addEventListener('change', function () {
+        cameraRegionInput.value = this.value;
+    });
+</script>
+{% endblock %}

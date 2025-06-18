@@ -1,0 +1,199 @@
+{% extends 'base.html' %}
+
+{% block title %}Disease Detection Results - CropFusion{% endblock %}
+
+{% block content %}
+<div class="result-container">
+    <h1 class="animate">Detection Results</h1>
+
+    {% if error %}
+    <div class="error-message animate">
+        <i class="fas fa-exclamation-circle"></i>
+        {{ error }}
+    </div>
+    <div class="card animate" style="text-align: center;">
+        <p>Something went wrong with the analysis. Please try again with a different image.</p>
+        <a href="{% url 'predict_disease' %}" class="btn">
+            <i class="fas fa-redo"></i> Try Again
+        </a>
+    </div>
+    {% else %}
+    <div class="result-card animate">
+        {% if image_url %}
+        <img src="{{ image_url }}" alt="Uploaded leaf image" class="result-image">
+        {% endif %}
+
+        <div class="result-details">
+            <div class="diagnosis">
+                <div class="diagnosis-icon">
+                    {% if result == 'Healthy' %}
+                    <i class="fas fa-check-circle" style="color: #4CAF50;"></i>
+                    {% else %}
+                    <i class="fas fa-exclamation-triangle" style="color: #FF9800;"></i>
+                    {% endif %}
+                </div>
+                <div>
+                    <h2>{{ result }}</h2>
+                    {% if confidence %}
+                    <p>Confidence: <strong>{{ confidence }}</strong></p>
+                    <div class="confidence-bar">
+                        <div class="confidence-level" id="confidenceLevel"></div>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+
+            <!-- Add this right after the diagnosis section -->
+            {% if selected_region %}
+            <div class="region-badge">
+                <i class="fas fa-map-marker-alt"></i> {{ selected_region }}
+            </div>
+            {% endif %}
+
+            <div class="card" style="margin-top: 2rem;">
+                <h3>What does this mean?</h3>
+                {% if result == 'Healthy' %}
+                <p>Your plant appears to be healthy! Continue with your current care routine.</p>
+                {% elif result == 'Bacterial Spot' %}
+                <p>Bacterial spot is a common disease that affects plants, especially tomatoes and peppers. It's
+                    characterized by small, dark, water-soaked spots on leaves, stems, and fruits.</p>
+                {% elif result == 'Leaf Mold' %}
+                <p>Leaf mold is a fungal disease that primarily affects tomatoes. It appears as pale green or yellow
+                    spots on the upper surfaces of leaves and olive-green to grayish-purple fuzzy growth on the
+                    undersides.</p>
+                {% elif result == 'Powdery Mildew' %}
+                <p>Powdery mildew is a fungal disease that appears as white powdery spots on leaves, stems, and
+                    sometimes fruits. It can affect a wide range of plants.</p>
+                {% else %}
+                <p>This condition may require further investigation. Consider consulting with a plant pathologist or
+                    agricultural extension service.</p>
+                {% endif %}
+
+                <!-- Update the care recommendations section to show it's region-specific -->
+                <div class="care-recommendations">
+                    <h4>
+                        {% if selected_region %}
+                        Care Recommendations for {{ selected_region }}:
+                        {% else %}
+                        Care Recommendations:
+                        {% endif %}
+                    </h4>
+
+                    <div class="recommendation-item">
+                        <i class="fas fa-cloud-sun" style="color: #4CAF50;"></i>
+                        <div>
+                            <strong>Ideal Weather Conditions:</strong>
+                            <p>{{ weather }}</p>
+                        </div>
+                    </div>
+
+                    <div class="recommendation-item">
+                        <i class="fas fa-tint" style="color: #2196F3;"></i>
+                        <div>
+                            <strong>Watering Advice:</strong>
+                            <p>{{ watering }}</p>
+                        </div>
+                    </div>
+
+                    <div class="recommendation-item">
+                        <i class="fas fa-seedling" style="color: #795548;"></i>
+                        <div>
+                            <strong>Soil Requirements:</strong>
+                            <p>{{ soil }}</p>
+                        </div>
+                    </div>
+
+                    {% if additional_recommendations %}
+                    <div class="recommendation-item">
+                        <i class="fas fa-list-check" style="color: #FF9800;"></i>
+                        <div>
+                            <strong>Additional Steps:</strong>
+                            <ul>
+                                {% for rec in additional_recommendations %}
+                                <li>{{ rec }}</li>
+                                {% endfor %}
+                            </ul>
+                        </div>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+
+            <div class="actions">
+                <a href="{% url 'predict_disease' %}" class="btn">
+                    <i class="fas fa-upload"></i> Upload Another Image
+                </a>
+                <a href="{% url 'home' %}" class="btn btn-secondary">
+                    <i class="fas fa-home"></i> Back to Home
+                </a>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}
+
+{% block extra_js %}
+{% if confidence and not error %}
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        const confidenceLevel = document.getElementById('confidenceLevel');
+        const confidenceValue = "{{ confidence }}".replace('%', '');
+
+        // Animate the confidence bar
+        setTimeout(() => {
+            confidenceLevel.style.width = `${confidenceValue}%`;
+        }, 300);
+    });
+</script>
+{% endif %}
+{% endblock %}
+
+{% block extra_css %}
+<style>
+    .care-recommendations {
+        margin-top: 1.5rem;
+    }
+
+    .recommendation-item {
+        display: flex;
+        margin-bottom: 1rem;
+        align-items: flex-start;
+    }
+
+    .recommendation-item i {
+        font-size: 1.5rem;
+        margin-right: 1rem;
+        margin-top: 0.2rem;
+    }
+
+    .recommendation-item strong {
+        display: block;
+        margin-bottom: 0.3rem;
+        color: var(--primary-dark);
+    }
+
+    .recommendation-item ul {
+        margin-top: 0.5rem;
+        padding-left: 1.2rem;
+    }
+
+    .recommendation-item li {
+        margin-bottom: 0.3rem;
+    }
+
+    .region-badge {
+        display: inline-block;
+        background-color: var(--primary-light);
+        color: var(--primary-dark);
+        padding: 0.4rem 0.8rem;
+        border-radius: 20px;
+        font-size: 0.9rem;
+        margin-bottom: 1.5rem;
+    }
+
+    .region-badge i {
+        margin-right: 0.3rem;
+    }
+</style>
+{% endblock %}
