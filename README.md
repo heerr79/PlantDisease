@@ -1,5 +1,6 @@
 # 🌿 Plant Disease Detection System
-<img src="C:\Users\rajpr\Desktop\plant_disease_det\Screenshot_1.png" alt="" width="800"/>
+ <img width="704" height="386" alt="image" src="C:\Users\rajpr\Desktop\plant_disease_det\Screenshot_1.png" />  
+
 <div align="center">
 
 ![Python](https://img.shields.io/badge/Python-3.8+-blue.svg)
